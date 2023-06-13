@@ -1,0 +1,86 @@
+{% include 'header.html' %}
+<script>
+  function check_password()
+  {
+  if (document.signup.password.value != document.signup.conpassword.value)
+     {
+      alert("Passwords do not match!");
+      document.signup.conpassword.focus();
+      return false;
+     }
+     return true;
+  }
+</script>
+<div class="card shadow m-5">
+  <div class="card-body">
+    <h5 class="p-2" style="border-bottom: 2px solid rgb(49, 50, 49); color: rgb(10, 202, 138);">Create Account</h5>
+    <div class="container-fluid">
+      <form method="post" name="signup" onsubmit="return check_password()">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" name="first_name" class="form-control" placeholder="Enter First Name"
+                pattern="[A-Za-z]+" required>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" name="last_name" class="form-control" placeholder="Enter Last Name"
+                pattern="[A-Za-z]+" required>
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label>Subcontractor security code</label>
+              <input type="text" name="subcontractor_code" class="form-control"
+                placeholder="Only if you are a subcontractor" pattern="[0-9]+">
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" name="mail" class="form-control" placeholder="Email address"
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" required>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" name="password" class="form-control" placeholder="Enter password"
+                pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" required>
+              <small class="form-text text-muted">Password must be at least 8 characters long and contain
+              at least one letter and one digit.</small>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label>Confirm Password</label>
+              <input type="password" name="conpassword" class="form-control"
+                placeholder="Confirm password" pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+                required>
+              <!-- At least 8 character long, at least one letter and at least one digit -->
+            </div>
+          </div>
+        </div>
+        <input type="submit" value="Submit" class="m-2 px-3 btn btn-primary"
+          style="background-color: rgb(10, 202, 138);">
+      </form>
+    </div>
+  </div>
+</div>
+{% if error == "No" %}
+<script>
+  alert("Signup Successful");
+  window.location.href = "{% url 'emp_log' %}";
+
+</script>
+{% endif %}
+{% if error == "Yes"  %}
+<script>
+  alert("Error: {{ cause }} already exists");
+
+</script>
+{% endif %}

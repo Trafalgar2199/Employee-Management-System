@@ -1,0 +1,15 @@
+{% extends "emp_base.html" %}
+
+{% block main %}
+<div class="card shadow m-2">
+    <div class="card-body">
+        <h5 class="p-2" style="border-bottom: 2px solid rgb(49, 50, 49); color: rgb(10, 202, 138);">Delete Account</h5>
+
+        <p>Are you sure you want to delete your account?</p>
+        <form method="post" action="{% url 'delete_account' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete Account</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

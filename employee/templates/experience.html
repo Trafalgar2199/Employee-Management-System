@@ -1,0 +1,158 @@
+{% extends "emp_base.html" %}
+{% block main %}
+<div class="card shadow m-2">
+  <div class="card-body">
+    <h5 class="p-2" style="border-bottom: 2px solid rgb(49, 50, 49); color: rgb(10, 202, 138);">Experience</h5>
+    <div class="container-fluid">
+      <form id="experience-form" method="post">
+        {% csrf_token %}
+        {% if error %}
+        <p>{{ error }}</p>
+        {% endif %}
+        <div class="form-row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">Company</label>
+              <input type="text" name="company" class="form-control" placeholder="Enter Company"
+                value="{{ experience.company|default_if_none:'' }}" required>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">Position</label>
+              <input type="text" name="position" class="form-control" placeholder="Enter Position"
+                value="{{ experience.position|default_if_none:'' }}" required>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">Start Date</label>
+              <input type="date" name="start_date" class="form-control"
+                value="{{ experience.start_date|default_if_none:'' }}" required>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">End Date</label>
+              <input type="date" name="end_date" class="form-control"
+                value="{{ experience.end_date|default_if_none:'' }}" required>
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label style="color: black;">Description</label>
+              <textarea name="description" class="form-control" placeholder="Enter Description">{{ experience.description|default_if_none:'' }}</textarea>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="m-2 px-3 btn btn-primary" style="background-color: rgb(10, 202, 138);">
+        Save
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<div id="table-container">
+  <form id="remove-form" action="/remove_experience/" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="row_id" id="row-id-input" value="">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Position</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Description</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody id="experience-table-body">
+        {% for experience_entry in experiences %}
+        <tr id="experience-row-{{ experience_entry.id }}">
+          <td>{{ experience_entry.company }}</td>
+          <td>{{ experience_entry.position }}</td>
+          <td>{{ experience_entry.start_date }}</td>
+          <td>{{ experience_entry.end_date }}</td>
+          <td>{{ experience_entry.description }}</td>
+          <td>
+            <button class="btn btn-danger" onclick="removeExperienceRow({{ experience_entry.id }})">Remove</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+</div>
+<script>
+  // Function to add a new row to the experience table
+  function addExperienceRow(experience) {
+      // Create a new row
+      var newRow = document.createElement('tr');
+      newRow.id = 'experience-row-' + experience.id;
+
+      // Create the cells for the new row
+      var companyCell = document.createElement('td');
+      companyCell.textContent = experience.company;
+      newRow.appendChild(companyCell);
+
+      var positionCell = document.createElement('td');
+      positionCell.textContent = experience.position;
+      newRow.appendChild(positionCell);
+
+      var startDateCell = document.createElement('td');
+      startDateCell.textContent = experience.start_date;
+      newRow.appendChild(startDateCell);
+
+      var endDateCell = document.createElement('td');
+      endDateCell.textContent = experience.end_date;
+      newRow.appendChild(endDateCell);
+
+      var descriptionCell = document.createElement('td');
+      descriptionCell.textContent = experience.description;
+      newRow.appendChild(descriptionCell);
+
+      var removeCell = document.createElement('td');
+      var removeButton = document.createElement('button');
+      removeButton.className = 'btn btn-danger';
+      removeButton.textContent = 'Remove';
+      removeButton.setAttribute('onclick', 'removeExperienceRow(' + experience.id + ')');
+      removeCell.appendChild(removeButton);
+      newRow.appendChild(removeCell);
+
+      // Append the new row to the table body
+      var tableBody = document.getElementById('experience-table-body');
+      tableBody.appendChild(newRow);
+  }
+
+
+  // Function to remove a row from the experience table
+  function removeExperienceRow(rowId) {
+      // Set the value of the hidden input field to the row ID
+      document.getElementById('row-id-input').value = rowId;
+
+      // Submit the form
+      document.getElementById('remove-form').submit();
+  }
+
+  // Function to fetch and display existing entries
+  function fetchExistingEntries() {
+      var url = "/experience"; // Replace with your backend endpoint URL
+      fetch(url)
+          .then(function (response) {
+              return response.json();
+          })
+          .then(function (data) {
+              // Process the received data and add rows to the experience table
+              for (var i = 0; i < data.length; i++) {
+                  var entry = data[i];
+                  addExperienceRow(entry.company, entry.position, entry.start_date, entry.end_date, entry.description);
+              }
+          })
+          .catch(function (error) {
+              console.error("Error fetching existing entries:", error);
+          });
+  }
+
+</script>
+{% endblock %}

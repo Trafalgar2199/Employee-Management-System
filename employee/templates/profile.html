@@ -1,0 +1,92 @@
+{% extends "emp_base.html" %}
+{% block main %}
+<div class="card shadow m-2">
+  <div class="card-body">
+    <h5 class="p-2" style="border-bottom: 2px solid rgb(49, 50, 49); color: rgb(10, 202, 138);">Profile</h5>
+    <div class="container-fluid">
+      <form method="post" name="signup" onsubmit="return check_password()">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">First Name</label>
+              <input type="text" name="first_name" class="form-control" placeholder="Enter First Name" pattern="[A-Za-z]+" value="{{ employee.user.first_name }}" onfocus="clearPlaceholder(this)">
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">Last Name</label>
+              <input type="text" name="last_name" class="form-control" placeholder="Enter Last Name" pattern="[A-Za-z]+" value="{{ employee.user.last_name }}" onfocus="clearPlaceholder(this)">
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label style="color: black;">Subcontractor security code</label>
+              <input type="text" name="subcontractor_code" class="form-control" placeholder="Only if you are a subcontractor" pattern="[0-9]+" value="{{ employee.user.username|default_if_none:'' }}" onfocus="clearPlaceholder(this)">
+              {% if employee.subcontractor_code %}
+              <small class="text-muted">Subcontractor code: {{ employee.user.sccode }}</small>
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label style="color: black;">Department</label>
+                  <input type="text" name="department" class="form-control" placeholder="Department" pattern="[A-Za-z0-9]+" value="{{ employee.department }}"  onfocus="clearPlaceholder(this)">
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label style="color: black;">Function</label>
+                  <input type="text" name="function" class="form-control" placeholder="Job Title" pattern="[A-Za-z0-9]+" value="{{ employee.function }}"  onfocus="clearPlaceholder(this)">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">Contact</label>
+              <input type="text" name="contact" class="form-control" placeholder="Contact" pattern="[0-9]+" value="{{ employee.contact }}"  onfocus="clearPlaceholder(this)">
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">Joining Date</label>
+              <input type="date" name="join_date" class="form-control form-control-sm" placeholder="Joining Date" pattern="[A-Za-z0-9]+" value="{{ employee.join_date }}" required readonly>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">Gender</label>
+              <select name="gender" class="form-control" required onfocus="clearPlaceholder(this)">
+                <option value="">Select Gender</option>
+                <option value="Male" {% if employee.gender == "Male" %}selected{% endif %}>Male</option>
+                <option value="Female" {% if employee.gender == "Female" %}selected{% endif %}>Female</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <input type="submit" value="Submit" class="m-2 px-3 btn btn-primary" style="background-color: rgb(10, 202, 138);">
+      </form>
+    </div>
+  </div>
+</div>
+{% if error == "No" %}
+<script>
+  alert("Profile Updated");
+  window.location.href = "{% url 'emp_log' %}";
+</script>
+{% endif %}
+{% if error == "Yes" %}
+<script>
+  alert("Error occurred, please try again");
+</script>
+{% endif %}
+<script>
+  function clearPlaceholder(element) {
+      element.placeholder = '';
+  }
+
+</script>
+{% endblock %}

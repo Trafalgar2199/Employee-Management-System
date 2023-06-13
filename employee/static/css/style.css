@@ -1,0 +1,12 @@
+.nav-link{
+    color :rgb(255, 255, 255) !important;
+}
+.nav-link:hover {
+    color: rgb(10, 202, 138) !important;
+    background-color: rgb(84, 82, 82);
+    border-radius: 15px;
+}
+
+.navbar-brand {
+    font-weight: bold
+}

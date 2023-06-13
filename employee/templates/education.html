@@ -1,0 +1,158 @@
+{% extends "emp_base.html" %}
+{% block main %}
+<div class="card shadow m-2">
+  <div class="card-body">
+    <h5 class="p-2" style="border-bottom: 2px solid rgb(49, 50, 49); color: rgb(10, 202, 138);">Education</h5>
+    <div class="container-fluid">
+      <form id="education-form" method="post">
+        {% csrf_token %}
+        {% if error %}
+        <p>{{ error }}</p>
+        {% endif %}
+        <div class="form-row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">Institution</label>
+              <input type="text" name="institution" class="form-control" placeholder="Enter Institution"
+                value="{{ education.institution|default_if_none:'' }}" required>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">Degree</label>
+              <input type="text" name="degree" class="form-control" placeholder="Enter Degree"
+                value="{{ education.degree|default_if_none:'' }}" required>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">Start Date</label>
+              <input type="date" name="start_date" class="form-control"
+                value="{{ education.start_date|default_if_none:'' }}" required>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label style="color: black;">Graduation Date</label>
+              <input type="date" name="end_date" class="form-control"
+                value="{{ education.end_date|default_if_none:'' }}" required>
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label style="color: black;">Description</label>
+              <textarea name="description" class="form-control" placeholder="Enter Description">{{ education.description|default_if_none:'' }}</textarea>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="m-2 px-3 btn btn-primary" style="background-color: rgb(10, 202, 138);">
+        Save
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<div id="table-container">
+  <form id="remove-form" action="/remove_education/" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="row_id" id="row-id-input" value="">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Institution</th>
+          <th>Degree</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Description</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody id="education-table-body">
+        {% for education_entry in educations %}
+        <tr id="education-row-{{ education_entry.id }}">
+          <td>{{ education_entry.institution }}</td>
+          <td>{{ education_entry.degree }}</td>
+          <td>{{ education_entry.start_date }}</td>
+          <td>{{ education_entry.end_date }}</td>
+          <td>{{ education_entry.description }}</td>
+          <td>
+            <button class="btn btn-danger" onclick="removeEducationRow({{ education_entry.id }})">Remove</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+</div>
+<script>
+  // Function to add a new row to the education table
+  function addEducationRow(education) {
+      // Create a new row
+      var newRow = document.createElement('tr');
+      newRow.id = 'education-row-' + education.id;
+
+      // Create the cells for the new row
+      var institutionCell = document.createElement("td");
+      institutionCell.textContent = institution;
+      newRow.appendChild(institutionCell);
+
+      var degreeCell = document.createElement("td");
+      degreeCell.textContent = degree;
+      newRow.appendChild(degreeCell);
+
+      var startDateCell = document.createElement('td');
+      startDateCell.textContent = education.start_date;
+      newRow.appendChild(startDateCell);
+
+      var endDateCell = document.createElement('td');
+      endDateCell.textContent = education.end_date;
+      newRow.appendChild(endDateCell);
+
+      var descriptionCell = document.createElement('td');
+      descriptionCell.textContent = education.description;
+      newRow.appendChild(descriptionCell);
+
+      var removeCell = document.createElement('td');
+      var removeButton = document.createElement('button');
+      removeButton.className = 'btn btn-danger';
+      removeButton.textContent = 'Remove';
+      removeButton.setAttribute('onclick', 'removeEducationRow(' + education.id + ')');
+      removeCell.appendChild(removeButton);
+      newRow.appendChild(removeCell);
+
+      // Append the new row to the table body
+      var tableBody = document.getElementById('education-table-body');
+      tableBody.appendChild(newRow);
+  }
+
+
+  // Function to remove a row from the education table
+  function removeEducationRow(rowId) {
+      // Set the value of the hidden input field to the row ID
+      document.getElementById('row-id-input').value = rowId;
+
+      // Submit the form
+      document.getElementById('remove-form').submit();
+  }
+
+  // Function to fetch and display existing entries
+  function fetchExistingEntries() {
+      var url = "/education"; // Replace with your backend endpoint URL
+      fetch(url)
+          .then(function (response) {
+              return response.json();
+          })
+          .then(function (data) {
+              // Process the received data and add rows to the education table
+              for (var i = 0; i < data.length; i++) {
+                  var entry = data[i];
+                  addEducationRow(entry.institution, entry.degree, entry.start_date, entry.end_date, entry.description);
+              }
+          })
+          .catch(function (error) {
+              console.error("Error fetching existing entries:", error);
+          });
+  }
+
+</script>
+{% endblock %}
